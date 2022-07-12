@@ -26,9 +26,6 @@ jobs:
           java-version: '18'
           cache: 'gradle'
 
-      - name: Assemble project
-        run: ./gradlew assemble
-
       - name: Execute tests
         env:
           RESTFUL_BOOKER_USERNAME: ${{ secrets.RESTFUL_BOOKER_USERNAME }}
