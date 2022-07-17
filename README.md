@@ -1,6 +1,10 @@
 ## API Tests Framework
 
+[![Regression](https://github.com/kshyk/api-tests/actions/workflows/main.yml/badge.svg)](https://github.com/kshyk/api-tests/actions/workflows/main.yml)
+[![CodeQL](https://github.com/kshyk/api-tests/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/kshyk/api-tests/actions/workflows/codeql-analysis.yml)
+
 ### Tech stack:
+
 - JDK 18
 - Gradle 7.x
 - Rest-Assured
