@@ -31,3 +31,9 @@ jobs:
           RESTFUL_BOOKER_USERNAME: ${{ secrets.RESTFUL_BOOKER_USERNAME }}
           RESTFUL_BOOKER_PASSWORD: ${{ secrets.RESTFUL_BOOKER_PASSWORD }}
         run: ./gradlew clean test
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: './build/test-results/**/*.xml'

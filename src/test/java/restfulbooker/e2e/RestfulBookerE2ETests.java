@@ -1,4 +1,4 @@
-package restfulbooker.getbookingids;
+package restfulbooker.e2e;
 
 import io.restassured.RestAssured;
 import org.assertj.core.api.SoftAssertions;
@@ -21,7 +21,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
 
-class GetBookingIdsTests extends TestBase {
+class RestfulBookerE2ETests extends TestBase {
     private GetBookingIdsResp[] bookingIds;
     private SecureRandom random;
     private BookingResp booking;
