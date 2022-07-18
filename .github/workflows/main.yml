@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew clean test
 
       - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: './build/test-results/**/*.xml'
