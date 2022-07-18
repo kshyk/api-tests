@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'io.freefair.lombok' version '6.5.0.2'
+    id 'org.owasp.dependencycheck' version '7.1.1'
 }
 
 group 'io.kshyk'
