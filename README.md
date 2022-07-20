@@ -2,6 +2,7 @@
 
 [![Regression](https://github.com/kshyk/api-tests/actions/workflows/main.yml/badge.svg)](https://github.com/kshyk/api-tests/actions/workflows/main.yml)
 [![CodeQL](https://github.com/kshyk/api-tests/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/kshyk/api-tests/actions/workflows/codeql-analysis.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kshyk_api-tests&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kshyk_api-tests)
 
 ### Tech stack:
 
