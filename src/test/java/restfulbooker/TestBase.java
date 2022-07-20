@@ -1,10 +1,14 @@
 package restfulbooker;
 
 import io.restassured.RestAssured;
+import org.assertj.core.api.BDDSoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 import restfulbooker.core.Tokenizer;
 
 import java.util.Map;
@@ -16,9 +20,12 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static restfulbooker.core.EnvHolder.RESTFUL_BOOKER_PASSWORD;
 import static restfulbooker.core.EnvHolder.RESTFUL_BOOKER_USERNAME;
 
+@ExtendWith(SoftAssertionsExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class TestBase {
+    @InjectSoftAssertions
+    protected BDDSoftAssertions softly;
     protected Tokenizer tokenizer;
 
     @BeforeAll
