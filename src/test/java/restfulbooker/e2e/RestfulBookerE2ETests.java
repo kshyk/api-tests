@@ -22,7 +22,6 @@ import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
 
 class RestfulBookerE2ETests extends TestBase {
-    private GetBookingIdsResp[] bookingIds;
     private SecureRandom random;
     private BookingResp booking;
 
@@ -60,7 +59,7 @@ class RestfulBookerE2ETests extends TestBase {
         var response = RestAssured.get();
         softly.then(response.statusCode()).isEqualTo(SC_OK);
         softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
-        bookingIds = response.as(GetBookingIdsResp[].class);
+        var bookingIds = response.as(GetBookingIdsResp[].class);
         softly.then(bookingIds.length).isGreaterThan(0);
         var optionalBookingId = Arrays.stream(bookingIds).filter(bookingId ->
             booking.getBookingId().equals(bookingId.getBookingId())).findAny();
@@ -86,10 +85,34 @@ class RestfulBookerE2ETests extends TestBase {
 
     @Test
     @Order(3)
+    void itShouldBePossibleToPartialBookingUpdate() {
+        var expected = booking.getBooking().toBuilder()
+            .firstName("Jason").lastName("Voorhees")
+            .totalPrice(random.nextInt(501, 1000))
+            .depositPaid(false)
+            .additionalNeeds(random.nextBoolean() ? "Hockey mask" : "Machete")
+            .build();
+        var response = RestAssured.given().contentType(JSON)
+            .cookie("token", tokenizer.getToken()).body(expected)
+            .patch("/" + booking.getBookingId());
+        softly.then(response.statusCode()).isEqualTo(SC_OK);
+        softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
+        var actual = response.as(BookingReq.class);
+        softly.then(actual.getFirstName()).isEqualTo(expected.getFirstName());
+        softly.then(actual.getLastName()).isEqualTo(expected.getLastName());
+        softly.then(actual.getTotalPrice()).isEqualTo(expected.getTotalPrice());
+        softly.then(actual.isDepositPaid()).isEqualTo(expected.isDepositPaid());
+        softly.then(actual.getBookingDates().getCheckIn()).isEqualTo(expected.getBookingDates().getCheckIn());
+        softly.then(actual.getBookingDates().getCheckOut()).isEqualTo(expected.getBookingDates().getCheckOut());
+        softly.then(actual.getAdditionalNeeds()).isEqualTo(expected.getAdditionalNeeds());
+    }
+
+    @Test
+    @Order(4)
     void itShouldBeAbleToDeleteBooking() {
         var response = RestAssured.given().contentType(JSON)
             .cookie("token", tokenizer.getToken())
-            .delete("/" + booking.getBookingId().intValue());
+            .delete("/" + booking.getBookingId());
         softly.then(response.statusCode()).isEqualTo(SC_CREATED);
         softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
     }
