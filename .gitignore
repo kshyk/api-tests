@@ -1,3 +1,6 @@
+# Created by https://www.toptal.com/developers/gitignore/api/git,intellij+all,java,linux,macos,gradle
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,intellij+all,java,linux,macos,gradle
+
 ### Git ###
 # Created by git for backups. To disable backups in Git:
 # $ git config --global mergetool.keepBackup false
@@ -197,3 +200,9 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+### Gradle Patch ###
+# Java heap dump
+*.hprof
+
+# End of https://www.toptal.com/developers/gitignore/api/git,intellij+all,java,linux,macos,gradle

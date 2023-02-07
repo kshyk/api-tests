@@ -5,11 +5,11 @@ plugins {
 }
 
 group 'io.kshyk'
-version '1.4.0'
+version '2.0.0'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(18)
+        languageVersion = JavaLanguageVersion.of(19)
         vendor = JvmVendorSpec.ADOPTIUM
     }
 }
