@@ -34,8 +34,8 @@ jobs:
           languages: ${{ matrix.language }}
           queries: security-and-quality
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+      - name: Gradle compile
+        run: ./gradlew --no-daemon clean compileJava compileTestJava
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
