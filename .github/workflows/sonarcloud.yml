@@ -26,4 +26,5 @@ jobs:
             -Dsonar.projectKey=kshyk_api-tests
             -Dsonar.sources=.
             -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.scm.provider=git
             #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
