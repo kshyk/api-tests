@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
-import static common.Constants.AVG_TIMEOUT;
+import static common.Constants.Numbers.AVG_TIMEOUT;
 import static io.restassured.http.ContentType.JSON;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
