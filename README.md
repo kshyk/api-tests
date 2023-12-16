@@ -6,7 +6,7 @@
 
 ### Tech stack:
 
-- JDK 19
+- JDK 21
 - Gradle 8.x
 - Rest-Assured
 - JUnit 5
