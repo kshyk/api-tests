@@ -24,7 +24,6 @@ jobs:
           args:
             -Dsonar.organization=kshyk
             -Dsonar.projectKey=kshyk_api-tests
-            -Dsonar.sources=src/
-            -Dsonar.test.inclusions=src/**/test/**/*
+            -Dsonar.sources=.
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.coverage.jacoco.xmlReportPaths=**/jacocoTestReport.xml
