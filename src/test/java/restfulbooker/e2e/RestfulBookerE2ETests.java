@@ -4,12 +4,7 @@ import io.restassured.RestAssured;
 import org.assertj.core.api.BDDSoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import restfulbooker.core.Tokenizer;
 import restfulbooker.entities.BookingDatesReq;
@@ -19,12 +14,11 @@ import restfulbooker.entities.GetBookingIdsResp;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 
 import static common.Constants.Numbers.AVG_TIMEOUT;
+import static common.Constants.Strings.*;
 import static io.restassured.http.ContentType.JSON;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -45,10 +39,6 @@ class RestfulBookerE2ETests {
     @BeforeAll
     void preconditions() {
         RestAssured.baseURI = "https://restful-booker.herokuapp.com";
-        var healthCheck = RestAssured.given().get("/ping");
-        assumeThat(healthCheck.statusCode())
-            .as("`%s` is OFFLINE. Skipping tests...", RestAssured.baseURI)
-            .isEqualTo(SC_CREATED);
         tokenizer = Tokenizer.INSTANCE;
         var body = Map.of(
             "username", RESTFUL_BOOKER_USERNAME,
@@ -65,16 +55,13 @@ class RestfulBookerE2ETests {
     @Test
     @Order(1)
     void itShouldBeAbleToCreateBooking() {
-        var zoneId = ZoneId.systemDefault();
-        var checkIn = LocalDate.now().plusDays(5L);
-        var checkOut = LocalDate.now().plusWeeks(2L);
-        var bookingDates = BookingDatesReq.builder()
-            .checkIn(Date.from(checkIn.atStartOfDay(zoneId).toInstant()))
-            .checkOut(Date.from(checkOut.atStartOfDay(zoneId).toInstant()))
-            .build();
         var bookingReq = BookingReq.builder()
             .totalPrice(random.nextInt(100, 500))
-            .depositPaid(random.nextBoolean()).bookingDates(bookingDates)
+            .depositPaid(random.nextBoolean()).bookingDates(
+                BookingDatesReq.builder()
+                    .checkIn(LocalDate.now().plusDays(5L))
+                    .checkOut(LocalDate.now().plusWeeks(2L))
+                    .build())
             .additionalNeeds(random.nextBoolean() ? "All inclusive" : "Breakfast")
             .build();
         var response = RestAssured.given().contentType(JSON).body(bookingReq).post();
@@ -86,15 +73,15 @@ class RestfulBookerE2ETests {
 
     @Test
     @Order(2)
-    void bookingIdsShouldContainAlreadyCreatedBookingId() {
+    void bookingIdsShouldContainAlreadyCreatedBooking() {
         var response = RestAssured.get();
         softly.then(response.statusCode()).isEqualTo(SC_OK);
         softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
         var bookingIds = response.as(GetBookingIdsResp[].class);
-        softly.then(bookingIds.length).isGreaterThan(0);
+        softly.then(bookingIds.length).as("There are no bookings").isGreaterThanOrEqualTo(1);
         var optionalBookingId = Arrays.stream(bookingIds).filter(bookingId ->
             booking.getBookingId().equals(bookingId.getBookingId())).findAny();
-        softly.then(optionalBookingId.isPresent()).isTrue();
+        softly.then(optionalBookingId.isPresent()).as("Created booking ID is not present").isTrue();
     }
 
     @Test
@@ -105,13 +92,15 @@ class RestfulBookerE2ETests {
         softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
         var actual = response.as(BookingReq.class);
         var expected = booking.getBooking();
-        softly.then(actual.getFirstName()).isEqualTo(expected.getFirstName());
-        softly.then(actual.getLastName()).isEqualTo(expected.getLastName());
-        softly.then(actual.getTotalPrice()).isEqualTo(expected.getTotalPrice());
-        softly.then(actual.isDepositPaid()).isEqualTo(expected.isDepositPaid());
-        softly.then(actual.getBookingDates().getCheckIn()).isEqualTo(expected.getBookingDates().getCheckIn());
-        softly.then(actual.getBookingDates().getCheckOut()).isEqualTo(expected.getBookingDates().getCheckOut());
-        softly.then(actual.getAdditionalNeeds()).isEqualTo(expected.getAdditionalNeeds());
+        softly.then(actual.getFirstName()).as(INCORRECT_FIRSTNAME).isEqualTo(expected.getFirstName());
+        softly.then(actual.getLastName()).as(INCORRECT_LASTNAME).isEqualTo(expected.getLastName());
+        softly.then(actual.getTotalPrice()).as(INCORRECT_TOTAL_PRICE).isEqualTo(expected.getTotalPrice());
+        softly.then(actual.isDepositPaid()).as(INCORRECT_DEPOSIT_PAID_STATE).isEqualTo(expected.isDepositPaid());
+        var actualBookingDates = actual.getBookingDates();
+        var expectedBookingDates = expected.getBookingDates();
+        softly.then(actualBookingDates.getCheckIn()).as(INCORRECT_CHECK_IN_DATE).isEqualTo(expectedBookingDates.getCheckIn());
+        softly.then(actualBookingDates.getCheckOut()).as(INCORRECT_CHECK_OUT_DATE).isEqualTo(expectedBookingDates.getCheckOut());
+        softly.then(actual.getAdditionalNeeds()).as(INCORRECT_ADDITIONAL_NEEDS).isEqualTo(expected.getAdditionalNeeds());
     }
 
     @Test
@@ -129,17 +118,49 @@ class RestfulBookerE2ETests {
         softly.then(response.statusCode()).isEqualTo(SC_OK);
         softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
         var actual = response.as(BookingReq.class);
-        softly.then(actual.getFirstName()).isEqualTo(expected.getFirstName());
-        softly.then(actual.getLastName()).isEqualTo(expected.getLastName());
-        softly.then(actual.getTotalPrice()).isEqualTo(expected.getTotalPrice());
-        softly.then(actual.isDepositPaid()).isEqualTo(expected.isDepositPaid());
-        softly.then(actual.getBookingDates().getCheckIn()).isEqualTo(expected.getBookingDates().getCheckIn());
-        softly.then(actual.getBookingDates().getCheckOut()).isEqualTo(expected.getBookingDates().getCheckOut());
-        softly.then(actual.getAdditionalNeeds()).isEqualTo(expected.getAdditionalNeeds());
+        softly.then(actual.getFirstName()).as(INCORRECT_FIRSTNAME).isEqualTo(expected.getFirstName());
+        softly.then(actual.getLastName()).as(INCORRECT_LASTNAME).isEqualTo(expected.getLastName());
+        softly.then(actual.getTotalPrice()).as(INCORRECT_TOTAL_PRICE).isEqualTo(expected.getTotalPrice());
+        softly.then(actual.isDepositPaid()).as(INCORRECT_DEPOSIT_PAID_STATE).isEqualTo(expected.isDepositPaid());
+        var actualBookingDates = actual.getBookingDates();
+        var expectedBookingDates = expected.getBookingDates();
+        softly.then(actualBookingDates.getCheckIn()).as(INCORRECT_CHECK_IN_DATE).isEqualTo(expectedBookingDates.getCheckIn());
+        softly.then(actualBookingDates.getCheckOut()).as(INCORRECT_CHECK_OUT_DATE).isEqualTo(expectedBookingDates.getCheckOut());
+        softly.then(actual.getAdditionalNeeds()).as(INCORRECT_ADDITIONAL_NEEDS).isEqualTo(expected.getAdditionalNeeds());
     }
 
     @Test
     @Order(4)
+    void itShouldBePossibleToUpdateEntireBooking() {
+        var expected = BookingReq.builder()
+            .firstName("Darth").lastName("Vader")
+            .totalPrice(random.nextInt(1001, 2000))
+            .depositPaid(true)
+            .bookingDates(BookingDatesReq.builder()
+                .checkIn(LocalDate.now().plusDays(11L))
+                .checkOut(LocalDate.now().plusDays(13L))
+                .build())
+            .additionalNeeds(random.nextBoolean() ? "Light saber" : "Helmet")
+            .build();
+        var response = RestAssured.given().contentType(JSON)
+            .cookie("token", tokenizer.getToken()).body(expected)
+            .put("/" + booking.getBookingId());
+        softly.then(response.statusCode()).isEqualTo(SC_OK);
+        softly.then(response.time()).isLessThanOrEqualTo(AVG_TIMEOUT);
+        var actual = response.as(BookingReq.class);
+        softly.then(actual.getFirstName()).as(INCORRECT_FIRSTNAME).isEqualTo(expected.getFirstName());
+        softly.then(actual.getLastName()).as(INCORRECT_LASTNAME).isEqualTo(expected.getLastName());
+        softly.then(actual.getTotalPrice()).as(INCORRECT_TOTAL_PRICE).isEqualTo(expected.getTotalPrice());
+        softly.then(actual.isDepositPaid()).as(INCORRECT_DEPOSIT_PAID_STATE).isEqualTo(expected.isDepositPaid());
+        var actualBookingDates = actual.getBookingDates();
+        var expectedBookingDates = expected.getBookingDates();
+        softly.then(actualBookingDates.getCheckIn()).as(INCORRECT_CHECK_IN_DATE).isEqualTo(expectedBookingDates.getCheckIn());
+        softly.then(actualBookingDates.getCheckOut()).as(INCORRECT_CHECK_OUT_DATE).isEqualTo(expectedBookingDates.getCheckOut());
+        softly.then(actual.getAdditionalNeeds()).as(INCORRECT_ADDITIONAL_NEEDS).isEqualTo(expected.getAdditionalNeeds());
+    }
+
+    @Test
+    @Order(5)
     void itShouldBeAbleToDeleteBooking() {
         var response = RestAssured.given().contentType(JSON)
             .cookie("token", tokenizer.getToken())

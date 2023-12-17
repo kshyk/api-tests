@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Value
 @Builder
 @Jacksonized
 public class BookingDatesReq {
     @JsonProperty(value = "checkin")
-    Date checkIn;
+    LocalDate checkIn;
     @JsonProperty(value = "checkout")
-    Date checkOut;
+    LocalDate checkOut;
 }

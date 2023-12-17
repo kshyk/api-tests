@@ -20,13 +20,17 @@ repositories {
 }
 
 dependencies {
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonCoreVersion"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+
     testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
     testImplementation "io.rest-assured:rest-assured-all:$restAssuredVersion"
     testImplementation "io.rest-assured:json-schema-validator:$restAssuredVersion"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testImplementation "org.assertj:assertj-core:$assertjVersion"
-    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
 }
 
 test {
