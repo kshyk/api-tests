@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'io.freefair.lombok' version '8.10.2'
-    id 'org.owasp.dependencycheck' version '11.0.0'
+    id 'org.owasp.dependencycheck' version '11.1.0'
 }
 
 group 'io.kshyk'
