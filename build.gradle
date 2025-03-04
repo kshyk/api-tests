@@ -21,6 +21,7 @@ repositories {
 
 dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
 
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonCoreVersion"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonCoreVersion"
